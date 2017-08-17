@@ -19,7 +19,30 @@ class P
         };
     }
 
-    public static function reduce($cb, $init = null, $array = null) {
+    public static function contains($value, $array = null) {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function ($value, $array) {
+            return in_array($value, $array);
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function has($key, $array = null) {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function ($key, $array) {
+            return array_key_exists($key, $array);
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function reduce($cb, $init = null, $array = null) 
+    {
         $argLength = 3;
         $suppliedArgs = func_get_args();
 
@@ -27,6 +50,133 @@ class P
             $a = $init;
 
             foreach($array as $k => $v) {
+                $a = $cb($a, $v, $k);
+            }
+
+            return $a;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function reduceWhile($pred, $cb = null, $init = null, $array = null) 
+    {
+        $argLength = 4;
+        $suppliedArgs = func_get_args();
+
+        $fn = function ($pred, $cb, $init, $array) {
+            $a = $init;
+
+            foreach($array as $k => $v) {
+                if ($pred($a, $v, $k)) {
+                    return $a;
+                }
+
+                $a = $cb($a, $v, $k);
+            }
+
+            return $a;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function concat($xs, $ys = null)
+    {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function ($xs, $ys) {
+            return array_merge($xs, $ys);
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function append($x, $xs = null)
+    {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function ($x, $xs) {
+            return array_merge($xs, [$x]);
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function emptyOf($any = null)
+    {
+        $argLength = 1;
+        $suppliedArgs = func_get_args();
+
+        $fn = function ($any) {
+            switch (gettype($any)) {
+                case 'boolean':
+                    return false;
+                case 'integer':
+                    return 0;
+                case 'double':
+                    return 0.00;
+                case 'string':
+                    return '';
+                case 'array':
+                    return [];
+                case 'object':
+                    return new stdClass;
+                default:
+                    return null;
+            }
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function isEmpty($any = null)
+    {
+        $argLength = 1;
+        $suppliedArgs = func_get_args();
+
+        $fn = function ($any) {
+            return $any === self::emptyOf($any);
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function init($array = null)
+    {
+        $argLength = 1;
+        $suppliedArgs = func_get_args();
+
+        $fn = function ($array) {
+            return array_slice($xs, 0, -1);
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function prepend($x, $xs = null)
+    {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function ($x, $xs) {
+            return array_merge([$x], $xs);
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function reduceRight($cb, $init = null, $array = null) {
+        $argLength = 3;
+        $suppliedArgs = func_get_args();
+
+        $fn = function ($cb, $init, $array) {
+            $a = $init;
+            $reversed = self::reverse($array);
+
+            foreach($reversed as $k => $v) {
                 $a = $cb($a, $v, $k);
             }
 
@@ -74,6 +224,66 @@ class P
         return self::callOrDelay($argLength, $suppliedArgs, $fn);
     }
 
+    public static function pick($values, $array = null)
+    {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function ($values, $array) {
+            $out = [];
+
+            foreach($array as $k => $v) {
+                if (self::contains($k, $values)) {
+                    $out[$k] = $v;
+                }
+            }
+
+            return $out;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function omit($values, $array = null)
+    {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function ($values, $array) {
+            $out = [];
+
+            foreach($array as $k => $v) {
+                if (!self::contains($k, $values)) {
+                    $out[$k] = $v;
+                }
+            }
+
+            return $out;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function reject($cb, $array = null)
+    {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function ($cb, $array) {
+            $out = [];
+
+            foreach($array as $k => $v) {
+                if (!$cb($v, $k)) {
+                    $out[$k] = $v;
+                }
+            }
+
+            return $out;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
     public static function propEq($prop, $value = null, $array = null)
     {
         $argLength = 3;
@@ -81,6 +291,18 @@ class P
 
         $fn = function ($prop, $value, $array) {
             return self::prop($prop, $array) === $value;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function pathEq($path, $value = null, $array = null)
+    {
+        $argLength = 3;
+        $suppliedArgs = func_get_args();
+
+        $fn = function ($path, $value, $array) {
+            return self::path($path, $array) === $value;
         };
 
         return self::callOrDelay($argLength, $suppliedArgs, $fn);
@@ -149,6 +371,62 @@ class P
         return self::callOrDelay($argLength, $suppliedArgs, $fn);
     }
 
+    public static function find($cb, $array = null)
+    {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($cb, $array) {
+            foreach($array as $k => $v) {
+                if ($cb($v, $k)) {
+                    return $v;
+                }
+            }
+
+            return null;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function findLast($cb, $array = null)
+    {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($cb, $array) {
+            $reversed = self::reverse($array);
+
+            foreach($reversed as $k => $v) {
+                if ($cb($v, $k)) {
+                    return $v;
+                }
+            }
+
+            return null;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function reverse($array = null)
+    {
+        $argLength = 1;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($array) {
+            $out = [];
+
+            foreach($array as $v) {
+                array_unshift($out, $v);
+            }
+
+            return $out;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
     public static function not($value = null)
     {
         $argLength = 1;
@@ -156,6 +434,18 @@ class P
 
         $fn = function($value) {
             return !$value;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function keys($array = null)
+    {
+        $argLength = 1;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($array) {
+            return $array_keys($array);
         };
 
         return self::callOrDelay($argLength, $suppliedArgs, $fn);
@@ -266,7 +556,7 @@ class P
         $suppliedArgs = func_get_args();
 
         $fn = function($array) {
-            return $array[count($array - 1)];
+            return $array[count($array) - 1];
         };
 
         return self::callOrDelay($argLength, $suppliedArgs, $fn);
@@ -321,6 +611,137 @@ class P
             }
 
             return $array[$prop];
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function explode($delimeter, $str = null)
+    {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($delimeter, $str) {
+            return explode($delimeter, $str);
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function join($glue, $array = null)
+    {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($glue, $array) {
+            return implode($delimeter, $array);
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function id($any = null)
+    {
+        $argLength = 1;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($any) {
+            return $any;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function T($any = null)
+    {
+        $argLength = 1;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($any) {
+            return true;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function pluck($key, $array = null)
+    {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($key, $array = null) {
+            return self::map(function($v, $k) use ($key) {
+                return $v[$key];
+            }, $array);
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function F($any = null)
+    {
+        $argLength = 1;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($any) {
+            return false;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+
+    public static function pathOr($default, $path, $array = null)
+    {
+        $argLength = 3;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($default, $path, $array) {
+            $value = self::path($path, $array);
+
+            return is_null($value) ? $default : $value;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function propOr($default, $prop, $array = null)
+    {
+        $argLength = 3;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($default, $prop, $array) {
+            $value = self::prop($prop, $array);
+
+            return is_null($value) ? $default : $value;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function splitEvery($interval, $array = null)
+    {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($interval, $array) {
+            $count = 1;
+
+            return self::reduce(function ($a, $c, $k) use ($interval, &$count) {
+                $last = self::last($a);
+
+                if (count($last) < $interval) {
+                    $a[count($a) - 1] = self::append($c, $last);
+                    $count++;
+                    return $a;
+                }
+
+                $a = self::append([$c], $a);
+
+                $count = 1;
+
+                return $a;
+            }, [[]], $array);
         };
 
         return self::callOrDelay($argLength, $suppliedArgs, $fn);
