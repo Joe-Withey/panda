@@ -107,6 +107,26 @@ class P
         };
     }
 
+    public static function assoc($prop, $value = null, $array = null)
+    {
+        $argLength = 3;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($prop, $value, $array) {
+            $out = [];
+
+            foreach($array as $k => $v) {
+                $out[$k] = $v;
+            }
+
+            $out[$prop] = $value;
+
+            return $out;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
     public static function prop($prop, $array = null)
     {
         $argLength = 2;
