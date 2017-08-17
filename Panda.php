@@ -127,6 +127,28 @@ class P
         return self::callOrDelay($argLength, $suppliedArgs, $fn);
     }
 
+    public static function assocPath($path, $value = null, $array = null)
+    {
+        $argLength = 3;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($path, $value, $array) {
+            if (count($path) === 0) {
+                return $value;
+            }
+
+            $idx = $path[0];
+
+            if (count($path) > 1) {
+                $value = self::assocPath(array_slice($path, 1), $value, $array[$idx]);
+            }
+
+            return self::assoc($idx, $value, $array);
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
     public static function dissoc($prop, $array = null)
     {
         $argLength = 2;
