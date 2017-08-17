@@ -149,6 +149,73 @@ class P
         return self::callOrDelay($argLength, $suppliedArgs, $fn);
     }
 
+    public static function not($value = null)
+    {
+        $argLength = 1;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($value) {
+            return !$value;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function head($array = null)
+    {
+        $argLength = 1;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($array) {
+            return $array[0];
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function tail($array = null)
+    {
+        $argLength = 1;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($array) {
+            return array_slice($array, 1);
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function eq($x, $y = null)
+    {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($x, $y) {
+            return $x === $y;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function complement($cb)
+    {
+        return function ($val) use ($cb) {
+            return !$cb($val);
+        };
+    }
+
+    public static function last($array = null)
+    {
+        $argLength = 1;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($array) {
+            return $array[count($array - 1)];
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
     public static function dissocPath($path, $array = null)
     {
         $argLength = 2;
