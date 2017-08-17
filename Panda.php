@@ -127,6 +127,18 @@ class P
         return self::callOrDelay($argLength, $suppliedArgs, $fn);
     }
 
+    public static function dissoc($prop, $array = null)
+    {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($prop, $array) {
+            return array_diff_key($array, [$prop => null]);
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
     public static function prop($prop, $array = null)
     {
         $argLength = 2;
