@@ -167,7 +167,7 @@ class P
         $suppliedArgs = func_get_args();
 
         $fn = function($prop, $array) {
-            if (is_null($a) || !isset($a[$c])) {
+            if (is_null($prop) || !isset($array[$prop])) {
                 return null;
             }
 
