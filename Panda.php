@@ -204,6 +204,62 @@ class P
         };
     }
 
+    public static function all($cb, $array = null)
+    {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($cb, $array) {
+            return count(self::filter($cb, $array)) === count($array);
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function any($cb, $array = null)
+    {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($cb, $array) {
+            return count(self::filter($cb, $array)) > 0;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function anyPass($cbs, $value = null)
+    {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($cbs, $value) {
+            $passes = self::filter(function ($cb) use ($value) {
+                return $cb($value);
+            }, $cbs);
+
+            return count($passes) > 0;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function allPass($cbs, $value = null)
+    {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($cbs, $value) {
+            $passes = self::filter(function ($cb) use ($value) {
+                return $cb($value);
+            }, $cbs);
+
+            return count($passes) === count($cbs);
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
     public static function last($array = null)
     {
         $argLength = 1;
