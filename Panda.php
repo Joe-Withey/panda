@@ -149,6 +149,32 @@ class P
         return self::callOrDelay($argLength, $suppliedArgs, $fn);
     }
 
+    public static function dissocPath($path, $array = null)
+    {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($path, $array) {
+            if (count($path) === 0) {
+                return $array;
+            }
+
+            $idx = $path[0];
+
+            if (count($path) === 1) {
+                return self::dissoc($idx, $array);
+            }
+
+            if ($array[$idx] === null) {
+                return $array;
+            }
+
+            return self::assoc($idx, self::dissocPath(array_slice($path, 1), $array[$idx]), $array);
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
     public static function dissoc($prop, $array = null)
     {
         $argLength = 2;
