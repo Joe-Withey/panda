@@ -35,8 +35,8 @@ Composable, reusable functions for PHP. Influenced by Ramda in the JS world.
 - [] sort
 - [] sortWith
 - [x] split
-- [] splitEvery
-- [] splitWhen
+- [x] splitEvery
+- [x] splitWhen
 - [x] T
 - [] uniq
 - [] uniqBy

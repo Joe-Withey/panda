@@ -747,6 +747,28 @@ class P
         return self::callOrDelay($argLength, $suppliedArgs, $fn);
     }
 
+    public static function splitWhen($pred, $array = null)
+    {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($pred, $array) {
+            return self::reduce(function ($a, $c, $k) use ($pred) {
+                $last = self::last($a);
+
+                if ($pred($c, $k)) {
+                    $a = self::append([$c], $a);
+                    return $a;
+                }
+
+                $a[count($a) - 1] = self::append($c, $last);
+                return $a;
+            }, [[]], $array);
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
     private static function callOrDelay($argLength, &$suppliedArgs, &$fn)
     {
         if (count($suppliedArgs) === $argLength) {
