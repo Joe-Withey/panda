@@ -41,6 +41,28 @@ class P
         return self::callOrDelay($argLength, $suppliedArgs, $fn);
     }
 
+    public static function add($x, $y = null) {
+        $argLength = 2;
+        $suppliedArgs = func_get_args();
+
+        $fn = function ($x, $y) {
+            return $x + $y;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
+    public static function inc($value = null) {
+        $argLength = 1;
+        $suppliedArgs = func_get_args();
+
+        $fn = function ($value) {
+            return $value + 1;
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
     public static function reduce($cb, $init = null, $array = null) 
     {
         $argLength = 3;
@@ -640,6 +662,24 @@ class P
         return self::callOrDelay($argLength, $suppliedArgs, $fn);
     }
 
+    public static function flatten($array = null)
+    {
+        $argLength = 1;
+        $suppliedArgs = func_get_args();
+
+        $fn = function($array) use (&$fn) {
+            return self::reduce(function ($a, $c) use ($fn) {
+                if (gettype($c) === 'array') {
+                    return self::concat($a, $fn($c));
+                }
+
+                return self::append($c, $a);
+            }, [], $array);
+        };
+
+        return self::callOrDelay($argLength, $suppliedArgs, $fn);
+    }
+
     public static function id($any = null)
     {
         $argLength = 1;
@@ -769,18 +809,18 @@ class P
         return self::callOrDelay($argLength, $suppliedArgs, $fn);
     }
 
-    private static function callOrDelay($argLength, &$suppliedArgs, &$fn)
+    private static function callOrDelay($argLength, $suppliedArgs, $fn)
     {
-        if (count($suppliedArgs) === $argLength) {
+        if (count($suppliedArgs) >= $argLength) {
             return call_user_func_array($fn, $suppliedArgs);
         }
 
-        $closure = function () use ($argLength, &$suppliedArgs, &$fn, &$closure) {
+        $closure = function () use ($argLength, $suppliedArgs, $fn, &$closure) {
             $args = func_get_args();
 
             $suppliedArgs = array_merge($suppliedArgs, $args);
 
-            return count($suppliedArgs) === $argLength ?
+            return count($suppliedArgs) >= $argLength ?
                 call_user_func_array($fn, $suppliedArgs) :
                 $closure;
         };

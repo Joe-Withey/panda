@@ -14,7 +14,7 @@ Composable, reusable functions for PHP. Influenced by Ramda in the JS world.
 - [x] F
 - [x] find
 - [x] findLast
-- [] flatten
+- [x] flatten
 - [] groupBy
 - [x] has
 - [x] init
