@@ -2,7 +2,38 @@
 
 Composable, reusable functions for PHP. Influenced by Ramda in the JS world.
 
+## Example
+
+```
+<?php
+
+require 'Panda.php';
+
+$xs = [1, 2 ,3, [[4]], [5], 6, 8, 9];
+
+$flattenAndIncrease = P::pipe([
+    P::flatten(),
+    P::map(P::inc())
+]);
+
+print_r($flattenAndIncrease($xs));
+
+```
+
 ## TODO
+
+- Implement as a PSR-4 PHP package.
+- Consider a better way of declaring library functions.
+- Unit tests.
+- Travis.
+- Investigate performance.
+
+### Ideas
+
+- Create adapters for Doctrine and Laravel collections.
+- Create function implementations to work with Arrays and Objects.
+
+### Function implementations
 
 - [] ascend
 - [x] identity
@@ -44,5 +75,4 @@ Composable, reusable functions for PHP. Influenced by Ramda in the JS world.
 - [] when
 - [] where
 - [] whereEq
-
 

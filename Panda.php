@@ -809,7 +809,7 @@ class P
         return self::callOrDelay($argLength, $suppliedArgs, $fn);
     }
 
-    private static function callOrDelay($argLength, $suppliedArgs, $fn)
+    protected static function callOrDelay($argLength, $suppliedArgs, $fn)
     {
         if (count($suppliedArgs) >= $argLength) {
             return call_user_func_array($fn, $suppliedArgs);
