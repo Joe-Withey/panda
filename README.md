@@ -1,6 +1,6 @@
-# panda
+# Panda
 
-Composable, reusable functions for PHP. Influenced by Ramda in the JS world.
+Composable, reusable, pure functions for PHP. Inspired by Ramda in the JS world. It's supposed to be a naive PHP port.
 
 ## Example
 
@@ -11,12 +11,30 @@ require 'Panda.php';
 
 $xs = [1, 2 ,3, [[4]], [5], 6, 8, 9];
 
-$flattenAndIncrease = P::pipe([
+$flattenReverseAndIncrease = P::pipe([
     P::flatten(),
+    P::reverse(),
     P::map(P::inc())
 ]);
 
-print_r($flattenAndIncrease($xs));
+print_r($flattenReverseAndIncrease($xs));
+
+```
+
+### Output
+
+```
+Array
+(
+    [0] => 10
+    [1] => 9
+    [2] => 7
+    [3] => 6
+    [4] => 5
+    [5] => 4
+    [6] => 3
+    [7] => 2
+)
 
 ```
 
