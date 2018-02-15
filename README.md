@@ -55,10 +55,10 @@ Array
 
 - [] ascend
 - [x] identity
-- [] comparator
+- [x] comparator
 - [x] concat
 - [x] contains
-- [] curryN
+- [x] curryN
 - [] descend
 - [x] F
 - [x] find
@@ -89,8 +89,8 @@ Array
 - [x] T
 - [] uniq
 - [] uniqBy
-- [] unless
-- [] when
+- [x] unless
+- [x] when
 - [] where
 - [] whereEq
 
